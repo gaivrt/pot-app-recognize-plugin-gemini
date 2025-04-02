@@ -1,71 +1,85 @@
-# Pot-App 文字识别插件模板仓库 (以 [OCR Space](https://ocr.space/) 为例)
+# Pot-App Gemini OCR 插件
 
-### 此仓库为模板仓库，编写插件时可以直接由此仓库创建插件仓库
+一个基于 Google Gemini 模型的 [Pot-App](https://github.com/pot-app/pot-desktop) OCR（光学字符识别）插件。
 
-## 插件编写指南
+## 功能特点
 
-### 1. 插件仓库创建
+- 使用 Google 强大的 Gemini AI 模型进行 OCR
+- 支持多种 Gemini 模型选项：
+  - Gemini 2.0 Flash
+  - Gemini 2.0 Flash Lite
+  - 自定义模型
+- 可自定义 OCR 提示词
+- 支持多种语言
+- 内置错误处理和验证
 
-- 以此仓库为模板创建一个新的仓库
-- 仓库名为 `pot-app-recognize-plugin-<插件名>`，例如 `pot-app-recognize-plugin-ocrspace`
+## 安装方法
 
-### 2. 插件信息配置
+1. 从 [Releases](https://github.com/gaivrt/pot-app-recognize-plugin-gemini/releases) 页面下载最新的 `.potext` 文件
+2. 将插件导入到 Pot-App 中
 
-编辑 `info.json` 文件，修改以下字段：
+## 配置说明
 
-- `id`：插件唯一 id，必须以`[plugin]`开头，例如 `[plugin].com.pot-app.ocrspace`
-- `display`: 插件显示名称，例如 `OCR Space`
-- `homepage`: 插件主页，填写你的仓库地址即可，例如 `https://github.com/pot-app/pot-app-recognize-plugin-template`
-- `icon`: 插件图标，填写当前目录下的图标名称，例如 `icon.png`
-- `needs`: 插件依赖，一个数组，每个依赖为一个对象，包含以下字段：
-  - `key`: 依赖 key，对应该项依赖在配置文件中的名称，例如 `apikey`
-  - `display`: 依赖显示名称，对应用户显示的名称，例如 `API Key`
-  - `type`: 组件类型 `input` | `select`
-  - `options`: 选项列表(仅 select 组件需要)，例如 `{"engine_a":"Engina A","engine_b":"Engina B"}`
-- `language`: 插件支持的语言映射，将 pot 的语言代码和插件发送请求时的语言代码一一对应
+插件需要以下配置：
 
-### 3. 插件编写/编译
+1. **Google AI API 密钥**（必需）
+   - 从 [Google AI Studio](https://makersuite.google.com/app/apikey) 获取 API 密钥
+   - 在插件设置中输入密钥
 
-编辑 `main.js` 实现 `recognize` 函数
+2. **模型选择**（可选）
+   - 从预定义模型中选择：
+     - Gemini 2.0 Flash
+     - Gemini 2.0 Flash Lite
+   - 或使用自定义模型
 
-#### Input parameters
+3. **自定义模型名称**（可选）
+   - 如果想使用预定义选项之外的特定 Gemini 模型
+   - 如果指定，将覆盖模型选择
 
-```javascript
-// config: config map
-// detect: detected source language
-// setResult: function to set result text
-// utils: some tools
-//     http: tauri http module
-//     readBinaryFile: function
-//     readTextFile: function
-//     Database: tauri Database class
-//     CryptoJS: CryptoJS module
-//     cacheDir: cache dir path
-//     pluginDir: current plugin dir 
-//     osType: "Windows_NT" | "Darwin" | "Linux"
-async function recognize(base64, lang, options) {
-  const { config, utils } = options;
-  const { http, readBinaryFile, readTextFile, Database, CryptoJS, run, cacheDir, pluginDir, osType } = utils;
-  const { fetch, Body } = http;
-}
+4. **自定义 OCR 提示词**（可选）
+   - 自定义用于 OCR 的提示词
+   - 默认值："Extract text from this image"
+
+## 支持的语言
+
+- 自动检测
+- 中文（简体和繁体）
+- 英语
+- 日语
+- 韩语
+- 法语
+- 西班牙语
+- 俄语
+- 德语
+- 意大利语
+- 土耳其语
+- 葡萄牙语（葡萄牙和巴西）
+- 越南语
+- 泰语
+- 阿拉伯语
+- 印地语
+- 波斯语
+
+## 开发说明
+
+本插件使用 JavaScript 开发，并使用 Gemini API 实现 OCR 功能。主要实现代码在 `main.js` 中。
+
+### 构建
+
+项目包含一个自动构建插件的 GitHub Actions 工作流：
+
+```yaml
+name: Build
+on: push
 ```
 
-#### Return value
+当你推送更改或创建发布时，它会创建一个包含插件文件的 `.potext` 文件。
 
-```javascript
-return "result";
-```
+## 许可证
 
-### 4. 打包 pot 插件
+本项目采用 GNU 通用公共许可证 v3.0 - 详见 [LICENSE](LICENSE) 文件。
 
-1. 将`main.js`文件和`info.json`以及图标文件压缩为 zip 文件。
+## 贡献
 
-2. 将文件重命名为`<插件id>.potext`，例如`plugin.com.pot-app.ocrspace.potext`,即可得到 pot 需要的插件。
+欢迎贡献！请随时提交 Pull Request。
 
-## 自动编译打包
-
-本仓库配置了 Github Actions，可以实现推送后自动编译打包插件。
-
-每次将仓库推送到 GitHub 之后 actions 会自动运行，将打包好的插件上传到 artifact，在 actions 页面可以下载
-
-每次提交 Tag 之后，actions 会自动运行，将打包好的插件上传到 release，在 release 页面可以下载打包好的插件
